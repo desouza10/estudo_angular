@@ -1,0 +1,214 @@
+<!-- LEIA O README DO ARQUIVO! LÁ TERÁ TODAS AS EXPLICAÇÕES DE DIRETIVAS -->
+
+<!-- Instanciando o módulo do angular da nossa aplicação-->
+<html ng-app="listaTelefonica">
+
+<head>
+    <title>Lista Telefonica</title>
+    <!--Referenciando o angular -->
+    <script src="lib\angular\angular.js"></script>
+    <link rel="stylesheet" type="text/css" href="lib\bootstrap\css\bootstrap.css">
+    <!--Referenciando o bootstrap-->
+    <style>
+        /* Criando alguns estilos para nossos componentes usados */
+
+        .jumbotron {
+            width: 400px;
+            text-align: center;
+            margin-top: 20px;
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        .table {
+            margin-top: 20px;
+        }
+
+        .form-control {
+            margin-bottom: 5px;
+        }
+
+        h5,
+        .h5 {
+            margin-top: 20px;
+        }
+    </style>
+
+    <script>
+        //Criando nosso módulo
+        angular.module("listaTelefonica", []);
+        //Carregando o módulo e adicionando uma controller a ele, sendo parametrizado por uma function com um $scope de parâmetro
+        angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function ($scope) {
+            //Criando um atributo do scope chamado Lista telefônica, que será carregado com o ng-bind na nossa view 
+            $scope.app = "Lista Telefonica";
+
+            //Criamos um array de telefones que serão carregados em uma tabela, usando ng-repeat para ler todas as informações de nome e telefone
+            //Desde o nome "Fernando", até "Layla"
+            $scope.contatos = [
+                { nome: "Fernando", telefone: "99999999" },
+                { nome: "Sandra", telefone: "88888888" },
+                { nome: "Guilherme", telefone: "77777777" },
+                { nome: "Henrique", telefone: "66666666" },
+                { nome: "Felipe", telefone: "55555555" },
+                { nome: "Layla", telefone: "44444444" },
+            ];
+
+            //Aqui que fazemos nossa inserção de novos contatos na nossa lista.
+
+            /*Existem 3 maneiras de fazer essa inserção usando o ng-model e $scope, 
+            das três, irei explicar cada uma delas e dizer qual a mais correta de ser implementada.
+            
+            Irei associar as functions com as chamadas na view.
+
+            1ª FORMA : A que mais devemos evitar
+
+                Podemos passar um JSON dentro do nosso $scope receptor da ng-model.  
+                O método push() adiciona novos itens ao final de uma matriz ou array e retorna o novo length.
+
+                $scope.contatos.push({nome: $scope.nome, 
+                                     telefone: $scope.telefone}
+                );
+                
+            
+            2ª FORMA : Uma mais aceitável:
+                
+                Mais aceitável porque aqui, mantemos o padrão de parametrização das nossas functions.                    
+
+                $scope.adicionarContato = function(nome, telefone){
+                    $scope.contatos.push({nome: $scope.nome, telefone: $scope.telefone});    
+                );
+            */
+
+            //Essa é a forma mais correta:
+
+            //Como estruturamos o ng-reapeat dentro da nossa table com a identificação "contato", para o escopo de "contatos"
+            //Sendo assim, pegamos o objeto como um todo, e passamos por parâmetro, tanto na function, como no push.
+            $scope.adicionarContato = function (contato) {
+                //Utilizamos o "angular.copy(contato)" dentro do nosso push(), para ele fechar o fluxo e copiar a informação
+                //Assim que submetida, e já gravar na lista. Para que ao editarmos o nome na input text, o valor não seja editado
+                //lista de contatos
+                $scope.contatos.push(angular.copy(contato));
+                //O delete, irá deletar o valor nas inputs, sempre que houver o submit do novo contato.
+                delete $scope.contato;
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div ng-controller="listaTelefonicaCtrl">
+        <div class="jumbotron">
+            <h3 ng-bind="app"></h3>
+            <!-- Tambem podemos renderizar em interpolação, porém caso haja uma inconsistência de conexão ou
+            demora na response do serviço de onde o elemento está sendo carregado, pode ser impresso na tela da seguinte forma:
+                
+                Código:
+                <h4>{{app}}</h4>
+
+                Tela: 
+                {{app}}
+            
+            Com o ng-bind, esse risco é eleminado.
+            -->
+
+            <table class="table table-striped">
+                <tr>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                </tr>
+
+                <!-- Aqui, o ng-repeate tem como valor a declaração de um objeto (objeto), para chamar os atributos (contatos) da controller 
+                    que está em nosso escopo-->
+                <tr ng-repeat="contato in contatos">
+                    <!-- Poderíamos passar as informações para a view, da forma com que está abaixo-->
+                    <!-- <td>{{contato.nome}}</td> -->
+                    <!-- <td>{{contato.telefone}}</td> -->
+
+                    <!-- Mas dessa forma, é bem mais visual e ajuda na manutenibilidade (boas práticas).
+                        Ele faz o ng-reapet com buscando chave e valor no nosso escopo.
+                        
+                        nome = key    | telefone = value
+                        {nome: "Teste", telefone: "00000000"}
+                        -->
+                    <td ng-repeat="(key,value) in contato">
+                        {{value}}
+                    </td>
+
+                </tr>
+            </table>
+            <hr>
+
+            <!-- 1ª FORMA: - -->
+            <!--
+                Aqui declaramos nossa ng-model, para receber os valores do valores que serão inputados, nossa ng-model está parametrizada
+                para receber os valores do nosso escopo, logo ela receber nome e telefone como parâmetro:
+                                <div ng-model="parametro_do_scope"><div>
+             
+                <input class="form-control" type="text" ng-model="nome" placeholder="Nome"/>
+                <input class="form-control" type="text" ng-model="telefone" placeholder="Telefone"/>
+                
+                Aqui declaramos o ng-click para utilizar nossa function "adicionarContato()".
+
+                <button class="btn btn-primary btn-block" ng-click="adicionarContato()">Adicionar Contato</button>
+            
+                
+                POR QUE ESSA É A FORMA MAIS ERRADA?
+                Resposta: Além de atrapalhar na hora da realização do teste unitário, pois teremos que atribuir elementos na scope, 
+                fazer a operação por tabela ao invés de passar o parâmetro de forma explícita. Isso deixa a aplicação mais difícil de compreender e
+                traz complexidade ao receber informações de um determinado serviço.
+            -->
+
+
+            <!-- 2ª FORMA: - -->
+            <!--
+                Aqui declaramos nossa ng-model, para receber os valores do valores que serão inputados, nossa ng-model está parametrizada
+                para receber os valores do nosso escopo, logo ela receber nome e telefone como parâmetro:
+                                <div ng-model="parametro_do_scope"><div>
+
+                <input class="form-control" type="text" ng-model="nome" placeholder="Nome"/>
+                <input class="form-control" type="text" ng-model="telefone" placeholder="Telefone"/>
+                                    
+
+                //A diferença é que chamamos nossa function com ng-click passando os parâmetros usados parâmetros  
+                <button class="btn btn-primary btn-block" ng-click="adicionarContato(nome, telefone)">Adicionar Contato</button>]
+
+                POR QUE ESSA É A FORMA ACEITÁVEL?
+                RESPOSTA: Como comentei na controller, mantemos o padrão de parametrização das nossas functions.
+             -->
+
+            <!-- Pegamos os atributos nome e telefone, e atribuimos ao objeto. -->
+            <input class="form-control" type="text" ng-model="contato.nome" placeholder="Nome" />
+            <input class="form-control" type="text" ng-model="contato.telefone" placeholder="Telefone" />
+
+            <!-- Chamamos a function da nossa controller passando o objeto como um todo de parâmetro, como ele espera receber -->
+            <button class="btn btn-primary btn-block" ng-click="adicionarContato(contato)">Adicionar Contato</button>
+
+            <div>
+
+                <!-- Decidi deixar na tela a forma que a ng-model funciona. 
+                    Se reparar, na aplicação, quando digitamos valores nos campos, ele preenche na tela em tempo real
+                    Isso acontece porque quando o compiler do Angular encontra uma diretiva do tipo ng-model, ele pega
+                    essa diretiva e realiza um set dos valores da model para o $scope em forma de notificações, até que 
+                    o fluxo em que está sendo executada, seja submetido ou desfocada.  
+                -->
+                <h5>Informações Inseridas</h5>
+                <table class="table table-striped">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            {{contato.nome}}
+                        </td>
+                        <td>
+                            {{contato.telefone}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+<!-- FIM -->
+</html>

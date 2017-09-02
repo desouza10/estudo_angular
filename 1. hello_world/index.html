@@ -1,0 +1,61 @@
+<!-- O INÍCIO DE TUDO! -->
+
+<!-- Começamos montando a estrutura comum do HTML -->
+
+<!-- Na tag HTML temos a proporiedade do angular, chamada "ng-app". Essa proporiedade, é responsável por
+    instanciar nosso módulo do angular em nossa aplicação-->
+<html ng-app="helloWorld">
+
+<head>
+    <title>Hello World!</title>
+    <!-- Estamos declarando o angular em nossa app-->
+    <script src="angular.js"></script>
+    <script>
+        /*Na linha abaixo, estamos criando nosso módulo do angular.
+          Os módulos declarativamente especificam como um aplicativo deve ser inicializado. */
+        angular.module("helloWorld", []);
+
+        /*Aqui estamos criando nosssa controller, onde nossas funções serão codificadas nele e apresentada na view.
+          
+          Nosso código, poderia ser escrito da seguinte forma:
+
+            var app = angular.module("helloWorld", []);
+            app.controller.controller("helloWorldCtrl", function ($scope) {
+                $scope.message = "Hello World!";
+            });
+
+            Porém dessa forma, nossa variável fica exposta. Então, codificando da forma abaixo, podemos esconder os elementos da nossa controller
+            quando nossa aplicação estiver hospedada na web, por exemplo.
+
+            No trecho:
+
+            angular.module("helloWorld") <- Ele pega o módulo que acabamos de criar.
+
+            No trecho como um todo:
+
+            angular.module("helloWorld").controller("helloWorldCtrl", function ($scope) {
+                //Aqui ele está pegando nosso módulo e atribuindo uma controller pra ele que se chamará "helloWorldCtrl"
+                //Ele terá como parâmetro uma function, que essa function terá como parâmetro um $scope.
+                //Um $scope é responsável por fazer a nossa view se comunicar com a controller.
+            });    
+        */
+
+        angular.module("helloWorld").controller("helloWorldCtrl", function ($scope) {
+            //Adicionamos um atributo ao $scope chamado "message", que receberá o valor de "Hello World!".
+            $scope.message = "Hello World!";
+        });
+    </script>
+</head>
+
+<!-- Suponhamos que aqui no BODY, temos a nossa view -->
+<body>
+    <!-- Instanciamos a nossa controller com o comando a propriedade do anagular "ng-controller" e o nome da nossa controller -->
+    <div ng-controller="helloWorldCtrl">
+        <!-- Dentro da interpolação (Interpolação = chave chave, dessa forma "{{alguma coisa dentro}}"),
+        nós renderizamos a "{{message}}", que é um atributo do $scope da nossa controller. -->
+        {{message}}
+    </div>
+</body>
+
+<!-- FIM -->
+</html>
