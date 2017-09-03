@@ -1,0 +1,177 @@
+<!-- CONTINUAÇÃO DO PROJETINHO DE LISTA TELEFÔNICA -->
+
+<!-- LEIA O README -->
+
+<html ng-app="listaTelefonica">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Lista Telefonica</title>
+    <script src="lib\angular\angular.js"></script>
+    <link rel="stylesheet" type="text/css" href="lib\bootstrap\css\bootstrap.css">
+    <style>
+        .jumbotron {
+            width: 400px;
+            text-align: center;
+            margin-top: 20px;
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        .table {
+            margin-top: 20px;
+        }
+
+        .form-control {
+            margin-bottom: 5px;
+        }
+
+        h5,
+        .h5 {
+            margin-top: 20px;
+        }
+
+        .selecionado {
+            background-color: yellow;
+        }
+    </style>
+
+    <script>
+        angular.module("listaTelefonica", []);
+        angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function ($scope) {
+            $scope.app = "Lista Telefonica";
+
+            $scope.contatos = [
+                { nome: "Fernando", telefone: "99999999" },
+                { nome: "Sandra", telefone: "88888888" },
+                { nome: "Guilherme", telefone: "77777777" },
+                { nome: "Henrique", telefone: "66666666" },
+                { nome: "Felipe", telefone: "55555555" },
+                { nome: "Layla", telefone: "44444444" },
+            ];
+
+            //Inserimos escopo com um array de operadoras e categoria de cada uma categoria 
+            $scope.operadoras = [
+                { nome: "Oi", codigo: 14, categoria: "Celular" },
+                { nome: "Vivo", codigo: 15, categoria: "Celular" },
+                { nome: "Tim", codigo: 41, categoria: "Celular" },
+                { nome: "Claro", codigo: 18, categoria: "Celular" },
+                { nome: "GVT", codigo: 25, categoria: "Fixo" },
+                { nome: "Embratel", codigo: 21, categoria: "Fixo" }
+
+            ];
+
+            $scope.adicionarContato = function (contato) {
+                $scope.contatos.push(angular.copy(contato));
+                delete $scope.contato;
+            }
+
+            // Esse escopo será responsável por herdar os atributos da classe "selecionado"
+            // no nosso estilo onde será apresentado no ng-class, essa classe vai deixar a linha que 
+            // selecionamos da cor amarela
+            $scope.classe = "selecionado";
+
+            // Function responsável por apagar os contatos da nossa lista de contatos.
+            // Ela funcnionará de uma forma contrária à validação. Ou seja, ela não deletará os contatos
+            // Ela simplesmente deixará na tela, os contatos que não estão selecionados.
+
+            // Nosso escopo "apagarContatos", recebe uma function com contatos($scope.contatos) como parâmetro
+            $scope.apagarContatos = function apagarContato(contatos) {
+                // Aqui nós sobrescrevemos nosso "$scope.contatos" com um filter() recebendo uma function auxiliar
+                // O método filter() cria um novo array com todos os elementos que passaram na implementação da função fornecida.
+                $scope.contatos = contatos.filter(function (contato) {
+                    // Essa function auxiliar verifica se contato é diferente de true, e retorna o contato
+                    if (!contato.selecionado) return contato;
+                });
+            }
+
+
+
+            // Nosso escopo "isContatoSelecionado", recebe uma function com contatos($scope.contatos) como parâmetro
+            $scope.isContatoSelecionado = function (contatos) {
+                // Ele retorna para a o escopo, um some de contatos.
+                // A função do "some", é verificar se em alguma posição do array, ele tem um valor true. Experimente passar um console.log(isContatoSelecionado(contatos));  
+                return contatos.some(function (contato) {
+                    // Aqui ele retorna para função que os contatos que foram selecionados do objeto contato. 
+                    return contato.selecionado;
+                });
+            };
+        });
+    </script>
+</head>
+
+<body>
+    <div ng-controller="listaTelefonicaCtrl">
+        <div class="jumbotron">
+            <h3 ng-bind="app"></h3>
+            <table class="table">
+                <tr>
+                    <th></th>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>Operadora</th>
+                </tr>
+                <!-- Adicionamos o ng-class que busca uma classe do CSS chamada "selecionado" e atribui ao nosso escopo-->
+                <tr ng-class="{selecionado: contato.selecionado}" ng-repeat="contato in contatos">
+                    <!-- Utilizamos a outra forma de renderizar os valores dos atributos que estão no ng-repeat -->
+                    <td><input type="checkbox" ng-model="contato.selecionado"></td>
+                    <td>{{contato.nome}}</td>
+                    <td>{{contato.telefone}}</td>
+                    <!-- Renderizamos o nome da operadora, que está nosso escopo com o array de operadoras -->
+                    <td>{{contato.operadora.nome}}</td>
+                </tr>
+            </table>
+            <hr>
+            <input class="form-control" type="text" ng-model="contato.nome" placeholder="Nome" />
+            <input class="form-control" type="text" ng-model="contato.telefone" placeholder="Telefone" />
+            <!-- Utilizamos um select para listarmos nosso array de operadoras com uma ng-model para salvar
+                os dados na lista de contatos e o ng-options para renderizar os dados na lista
+                utilizamos o "group by" para agrupar pelas categorias de operadoras-->
+            <select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
+                 <option value="">Selecione uma operadora</option>
+             </select>
+            <!-- Chamamos a function da nossa controller passando o objeto como um todo de parâmetro, como ele espera receber -->
+            <button class="btn btn-primary btn-block" ng-click="adicionarContato(contato)" ng-disabled="!contato.nome || !contato.telefone">Adicionar Contato</button>
+
+            <!-- Botão de apagar contatos assim que o mesmo é selecionado -->
+            <button class="btn btn-danger btn-block" ng-click="apagarContatos(contatos)" ng-disabled="!isContatoSelecionado(contatos)">Apagar Contato</button>
+
+            <!-- Podemos usar o ng-if e ng-show -->
+            <!-- <button class="btn btn-danger btn-block" ng-click="apagarContatos(contatos)" ng-show="!isContatoSelecionado(contatos)">Apagar Contato</button> -->
+            <!-- <button class="btn btn-danger btn-block" ng-click="apagarContatos(contatos)" ng-hide="!isContatoSelecionado(contatos)">Apagar Contato</button> -->
+            <!-- <button class="btn btn-danger btn-block" ng-click="apagarContatos(contatos)" ng-if="!isContatoSelecionado(contatos)">Apagar Contato</button> -->
+
+            <!-- Sempre aconselhado usar o ng-if, quando tivermos uma renderização pesada, para melhorar a performance -->
+
+            <div>
+                <h5>Informações Inseridas</h5>
+                <table class="table table-striped">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                        <th>Operadora</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            {{contato.nome}}
+                        </td>
+                        <td>
+                            {{contato.telefone}}
+                        </td>
+                        <td>
+                            {{contato.operadora.nome}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Usamos o ng-include para inserir um fragmento de outro arquivo html -->
+    <!-- As aspas simples dentro das aspas, são para a diretiva entender que não estamos buscando uma propriedade de um scope, sendo assim, ele escapa a busca
+         e entende que é um arquivo. -->
+    <!-- Se você usar o Chrome, isso não irá funcionar. O motivo é que isto é uma chamada AJAX, e será bloqueada, pois estamos usando o protocolo FILE e não HTTP -->
+    <div ng-include="'footer.html'"></div>
+</body>
+<!-- FIM -->
+
+</html>

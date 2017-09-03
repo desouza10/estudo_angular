@@ -1,0 +1,63 @@
+FALANDO DE DIRETIVAS
+
+Vamos desenvolver uma aplicação de lista telefonica.
+Falaremos de app, controller, bind, reapeat, model e click
+
+DIRETIVAS:
+Diretivas são extensóes da linguagem HTML que permitem a implementação de novos comportamentos, de forma declarativa.
+
+DIRETIVA 1 - ngApp :
+Responsável por definir as fronteiras da aplicação. O Angular irá percorrer o seu HTML, procurando essas diretivas. 
+Quando ele encontra uma dessas diretivas, ele usa uma propriedade dele mesmo chamada "compile". Então, ele irá compilar essas diretivas
+e executar pra gente. 
+
+DIRETIVA 2 - ngController :
+Responsável por vincular a view e o controller. De onde nasce o $scope.
+
+DIRETIVA 3 - ngBind :
+Responsável por substituir o elemento por uma expressão. O bind é executado para renderizar um valor que vem da controller,
+para a view, dentro de um elemento HTML. 
+
+Exemplo: 
+
+<head>
+<script>
+        angular.module("listaTelefonica", []);
+        angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function ($scope) {
+            $scope.app = "Lista Telefonica";
+        });
+    </script>
+</head>
+
+<body>
+    <div ng-controller="listaTelefonicaCtrl">
+        <div>
+            <h4 ng-bind="app"></h4>
+        </div>
+    </div>
+</body>
+
+DIRETIVA 3 - ngReapeat : 
+Responsável por realizar a interação sobre os itens de uma coleção (arrays) ou de um objeto.
+
+DIRETIVA 4 - ngModel :
+Responsável por vincular uma propriedade ao $scope. Logo, ele faz o contrário do ng-Bind, recebendo uma informação
+da view e define no $scope. Os elementos mais comuns do HTML, no qual o ngModel é utilizados são, inputs, selects, textareas e etc.   
+
+DIRETIBA 5 - ngClick :
+Responsável por atribuir um comportamento a um evento.
+
+DIRETIVA 6 - ngDisabled :
+Responsável por desabilitar um elemento dinamicamente.
+
+DIRETIVA 7 - ngOptions :
+Responsável por renderizar opções de um select.
+
+DIRETIVA 8 - ngClass e ngStyle :
+Responsável por aplicar classes CSS e estilos dinamicamente.
+
+DIRETIVA 9 - ngShow, ngHide e ngIf :
+Responsável por exibir um elemento de forma condicional.
+
+DIRETIVA 10 - ngInclude :
+Responsável por incluir conteúdo dinamicamente.
